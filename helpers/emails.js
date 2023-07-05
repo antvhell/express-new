@@ -28,4 +28,34 @@ const emailRegistro = async (datos) => {
   });
 };
 
-export { emailRegistro };
+const emailOlvidePassword = async (datos) => {
+  const transport = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+  //   console.log(datos);
+  const { email, nombre, token } = datos;
+
+  // Enviar el email
+  await transport.sendMail({
+    from: "GuiaPractica.colmex",
+    to: email,
+    subject: "Reestablece tu cuenta en la GuiaPractica.colmex",
+    text: "Reestablece tu cuenta en la GuiaPractica.colmex",
+    html: `
+    <p>Hola ${nombre}, has solicitado reestablecer tu password en la GuiaPractica.colmex</p>
+    <p>Sigue el siguiente enlace para generar un password nuevo:
+    <a href=" ${process.env.BACKEND_URL}:${
+      process.env.PORT ?? 3000
+    }/auth/olvide-password/${token} ">Reestablecer password</a></p>
+
+    <p>Si tu no solicitaste el cambio de password, puedes ignorar el siguiente mensaje</p>
+    `,
+  });
+};
+
+export { emailRegistro, emailOlvidePassword };
